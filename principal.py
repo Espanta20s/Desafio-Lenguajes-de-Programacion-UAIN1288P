@@ -1,7 +1,7 @@
 import os
 import tkinter as tk
 from tkinter import ttk, messagebox
-
+from functools import reduce
 
 ARCHIVO = "pacientes.txt"
 
@@ -240,7 +240,7 @@ def mostrar_resumen():
 
 ventana = tk.Tk()
 ventana.title("Sistema de Centro de Salud del MINSA")
-ventana.geometry("760x700")
+ventana.geometry("800x740")
 ventana.resizable(False, False)
 
 
@@ -342,9 +342,6 @@ tk.Button(busqueda, text="Mostrar todos", width=10, command=lambda: mostrar()).g
     row=0, column=3, padx=5
 )
 
-tk.Button(busqueda, text="Resumen", width=10, command=mostrar_resumen).grid(
-    row=0, column=4, padx=5
-)
 
 # Tabla
 
@@ -365,6 +362,8 @@ tabla.column("telefono", width=140)
 tabla.pack()
 
 tabla.bind("<ButtonRelease-1>", seleccionar)
+
+tk.Button(pag2, text="Resumen", width=10, command=mostrar_resumen).pack(pady=20)
 
 mostrar()
 
