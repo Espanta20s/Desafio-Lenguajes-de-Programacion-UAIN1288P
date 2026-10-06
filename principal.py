@@ -3,6 +3,9 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 
 
+ARCHIVO = "pacientes.txt"
+
+
 def limpiar():
 
     entrada_nombre.delete(0, tk.END)
@@ -12,6 +15,7 @@ def limpiar():
 
 
 def validar_datos(nombre, edad, dni, telefono):
+
     if nombre == "" or edad == "" or dni == "" or telefono == "":
         messagebox.showwarning("Advertencia", "Complete todos los campos")
         return False
@@ -35,6 +39,34 @@ def validar_datos(nombre, edad, dni, telefono):
     return True
 
 
+def obtener_registros():
+
+    registros = []
+
+    if os.path.exists(ARCHIVO):
+        try:
+            with open(ARCHIVO, "r", encoding="utf-8") as archivo:
+                for linea in archivo:
+                    datos = linea.strip().split("|")
+
+                    if len(datos) == 4:
+                        registros.append(datos)
+        except OSError:
+            messagebox.showerror("Error", "No se pudo leer el archivo de pacientes")
+
+    return registros
+
+
+def guardar_registros(registros):
+
+    try:
+        with open(ARCHIVO, "w", encoding="utf-8") as archivo:
+            for registro in registros:
+                archivo.write("|".join(registro) + "\n")
+    except OSError:
+        messagebox.showerror("Error", "No se pudo guardar la informacion")
+
+
 def registrar():
 
     nombre = entrada_nombre.get().strip()
@@ -45,18 +77,17 @@ def registrar():
     if not validar_datos(nombre, edad, dni, telefono):
         return
 
-    if os.path.exists("pacientes.txt"):
+    registros = obtener_registros()
 
-        with open("pacientes.txt", "r", encoding="utf-8") as archivo:
-            for linea in archivo:
-                datos = linea.strip().split("|")
+    # FILTER: busca si existe un paciente con el mismo DNI.
+    duplicados = list(filter(lambda paciente: paciente[2] == dni, registros))
 
-                if len(datos) >= 3 and datos[2] == dni:
-                    messagebox.showerror("Error", "El dni ya existe")
-                    return
+    if duplicados:
+        messagebox.showerror("Error", "El DNI ya existe")
+        return
 
-    with open("pacientes.txt", "a", encoding="utf-8") as archivo:
-        archivo.write(nombre + "|" + edad + "|" + dni + "|" + telefono + "\n")
+    registros.append([nombre, edad, dni, telefono])
+    guardar_registros(registros)
 
     messagebox.showinfo("Registro", "Paciente registrado correctamente")
 
@@ -64,20 +95,24 @@ def registrar():
     mostrar()
 
 
-def mostrar():
+def mostrar(registros=None):
 
     for fila in tabla.get_children():
         tabla.delete(fila)
 
-    if not os.path.exists("pacientes.txt"):
-        return
+    if registros is None:
+        registros = obtener_registros()
 
-    with open("pacientes.txt", "r", encoding="utf-8") as archivo:
-        for linea in archivo:
-            datos = linea.strip().split("|")
+    # MAP: transforma cada registro en los valores que se muestran en la tabla.
+    datos_tabla = list(
+        map(
+            lambda paciente: (paciente[0], paciente[1], paciente[2], paciente[3]),
+            registros,
+        )
+    )
 
-            if len(datos) == 3:
-                tabla.insert("", tk.END, values=(datos[0], datos[1], datos[2]))
+    for datos in datos_tabla:
+        tabla.insert("", tk.END, values=datos)
 
 
 def seleccionar(event):
@@ -110,32 +145,25 @@ def modificar():
     if not validar_datos(nombre, edad, dni, telefono):
         return
 
-    registros = []
+    registros = obtener_registros()
     encontrado = False
 
-    if os.path.exists("pacientes.txt"):
-
-        with open("pacientes.txt", "r", encoding="utf-8") as archivo:
-            for linea in archivo:
-                datos = linea.strip().split("|")
-
-                if len(datos) >= 3 and datos[2] == dni:
-                    registros.append(nombre + "|" + edad + "|" + dni + "|" + telefono)
-                    encontrado = True
-
-                else:
-                    registros.append(linea.strip())
+    for registro in registros:
+        if registro[2] == dni:
+            registro[0] = nombre
+            registro[1] = edad
+            registro[3] = telefono
+            encontrado = True
+            break
 
     if encontrado:
-
-        with open("pacientes.txt", "w", encoding="utf-8") as archivo:
-            for registro in registros:
-                archivo.write(registro + "\n")
-
-        messagebox.showinfo("Modificar", "Paciente modificado")
+        guardar_registros(registros)
+        messagebox.showinfo("Modificar", "Paciente modificado correctamente")
 
         limpiar()
         mostrar()
+    else:
+        messagebox.showwarning("Modificar", "No se encontro el paciente")
 
 
 def eliminar():
@@ -151,31 +179,21 @@ def eliminar():
     if not respuesta:
         return
 
-    registros = []
-    encontrado = False
+    registros = obtener_registros()
 
-    if os.path.exists("pacientes.txt"):
+    # FILTER: conserva todos los pacientes excepto el que se desea eliminar.
+    nuevos_registros = list(filter(lambda paciente: paciente[2] != dni, registros))
 
-        with open("pacientes.txt", "r", encoding="utf-8") as archivo:
-            for linea in archivo:
-                datos = linea.strip().split("|")
+    if len(nuevos_registros) == len(registros):
+        messagebox.showwarning("Eliminar", "No se encontro el paciente")
+        return
 
-                if len(datos) >= 3 and datos[2] == dni:
-                    encontrado = True
+    guardar_registros(nuevos_registros)
 
-                else:
-                    registros.append(linea.strip())
+    messagebox.showinfo("Eliminar", "Paciente eliminado correctamente")
 
-    if encontrado:
-
-        with open("pacientes.txt", "w", encoding="utf-8") as archivo:
-            for registro in registros:
-                archivo.write(registro + "\n")
-
-        messagebox.showinfo("Eliminar", "Paciente eliminado")
-
-        limpiar()
-        mostrar()
+    limpiar()
+    mostrar()
 
 
 ventana = tk.Tk()
