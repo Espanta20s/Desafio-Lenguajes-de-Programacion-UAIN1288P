@@ -11,6 +11,30 @@ def limpiar():
     entrada_telefono.delete(0, tk.END)
 
 
+def validar_datos(nombre, edad, dni, telefono):
+    if nombre == "" or edad == "" or dni == "" or telefono == "":
+        messagebox.showwarning("Advertencia", "Complete todos los campos")
+        return False
+
+    if not nombre.replace(" ", "").isalpha():
+        messagebox.showwarning("Advertencia", "El nombre solo debe contener letras")
+        return False
+
+    if not edad.isdigit() or not 1 <= int(edad) <= 120:
+        messagebox.showwarning("Advertencia", "La edad debe estar entre 1 y 120")
+        return False
+
+    if not dni.isdigit() or len(dni) != 8:
+        messagebox.showwarning("Advertencia", "El DNI debe tener 8 digitos")
+        return False
+
+    if not telefono.isdigit() or len(telefono) != 9:
+        messagebox.showwarning("Advertencia", "El telefono debe tener 9 digitos")
+        return False
+
+    return True
+
+
 def registrar():
 
     nombre = entrada_nombre.get().strip()
@@ -18,8 +42,7 @@ def registrar():
     dni = entrada_dni.get().strip()
     telefono = entrada_telefono.get().strip()
 
-    if nombre == "" or edad == "" or dni == "":
-        messagebox.showwarning("Advertencia", "Complete todos los campos")
+    if not validar_datos(nombre, edad, dni, telefono):
         return
 
     if os.path.exists("pacientes.txt"):
@@ -84,8 +107,7 @@ def modificar():
     dni = entrada_dni.get().strip()
     telefono = entrada_telefono.get().strip()
 
-    if nombre == "" or edad == "" or dni == "":
-        messagebox.showwarning("Advertencia", "Seleccione un paciente")
+    if not validar_datos(nombre, edad, dni, telefono):
         return
 
     registros = []
