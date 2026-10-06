@@ -216,6 +216,28 @@ def buscar():
     mostrar(filtrados)
 
 
+def mostrar_resumen():
+    registros = obtener_registros()
+
+    if not registros:
+        messagebox.showinfo("Resumen", "No hay pacientes registrados")
+        return
+
+    # MAP: obtiene las edades como números.
+    edades = list(map(lambda paciente: int(paciente[1]), registros))
+
+    # REDUCE: suma todas las edades.
+    suma_edades = reduce(lambda total, edad: total + edad, edades, 0)
+
+    promedio = suma_edades / len(edades)
+
+    messagebox.showinfo(
+        "Resumen",
+        f"Pacientes registrados: {len(registros)}\n"
+        f"Promedio de edad: {promedio:.1f} años",
+    )
+
+
 ventana = tk.Tk()
 ventana.title("Sistema de Centro de Salud del MINSA")
 ventana.geometry("760x700")
@@ -318,6 +340,10 @@ tk.Button(busqueda, text="Buscar", width=10, command=buscar).grid(
 
 tk.Button(busqueda, text="Mostrar todos", width=10, command=lambda: mostrar()).grid(
     row=0, column=3, padx=5
+)
+
+tk.Button(busqueda, text="Resumen", width=10, command=mostrar_resumen).grid(
+    row=0, column=4, padx=5
 )
 
 # Tabla
