@@ -151,8 +151,8 @@ def eliminar():
 
 
 ventana = tk.Tk()
-ventana.title("Sistema de centro de salud del MINSA")
-ventana.geometry("650x620")
+ventana.title("Sistema de Centro de Salud del MINSA")
+ventana.geometry("760x700")
 ventana.resizable(False, False)
 
 
@@ -164,23 +164,21 @@ pag2 = ttk.Frame(pestana)
 pestana.add(pag1, text="Bienvenida")
 pestana.add(pag2, text="Registro de Pacientes")
 
-titulo1 = ttk.Label(pag1, text="Sistema del MINSA", font=("Arial", 26, "bold"))
+# Bienvenida
+
+titulo1 = ttk.Label(pag1, text="Sistema de Centro de Salud", font=("Arial", 26, "bold"))
 titulo1.pack(pady=80)
 
 
-ttk.Label(pag1, text="Sistema desarrollado en Python", font=("Arial", 16)).pack()
-ttk.Label(pag1, text="Tkinter + TXT", font=("Arial", 16)).pack(pady=5)
+ttk.Label(
+    pag1, text="Sistema desarrollado en Python con Tkinter", font=("Arial", 18)
+).pack()
+ttk.Label(pag1, text="Registro y gestión de pacientes", font=("Arial", 16)).pack(pady=5)
 
-botones1 = tk.Frame(pag1)
-botones1.pack(pady=20)
 
-tk.Button(
-    botones1,
-    text="Salir",
-    width=10,
-    command=lambda: ventana.destroy(),
-).grid(row=0, column=0, padx=5)
+tk.Button(pag1, text="Salir", width=10, command=ventana.destroy).pack(pady=140)
 
+# Registro de pacientes
 
 titulo2 = ttk.Label(pag2, text="Registro de Pacientes", font=("Arial", 16, "bold"))
 titulo2.pack(pady=20)
@@ -189,17 +187,19 @@ titulo2.pack(pady=20)
 formulario = tk.Frame(pag2)
 formulario.pack()
 
-ttk.Label(formulario, text="Nombre:").grid(row=0, column=0, padx=10, pady=10)
+ttk.Label(formulario, text="Nombre:").grid(
+    row=0, column=0, padx=10, pady=10, sticky="e"
+)
 
 entrada_nombre = tk.Entry(formulario, width=20)
 entrada_nombre.grid(row=0, column=1)
 
-ttk.Label(formulario, text="Edad:").grid(row=1, column=0, padx=10, pady=10)
+ttk.Label(formulario, text="Edad:").grid(row=1, column=0, padx=10, pady=10, sticky="e")
 
 entrada_edad = tk.Entry(formulario, width=20)
 entrada_edad.grid(row=1, column=1)
 
-ttk.Label(formulario, text="DNI:").grid(row=2, column=0, padx=10, pady=10)
+ttk.Label(formulario, text="DNI:").grid(row=2, column=0, padx=10, pady=10, sticky="e")
 
 entrada_dni = tk.Entry(formulario, width=20)
 entrada_dni.grid(row=2, column=1)
@@ -217,15 +217,15 @@ tk.Button(botones2, text="Registrar", width=10, command=registrar).grid(
 )
 
 tk.Button(botones2, text="Modificar", width=10, command=modificar).grid(
-    row=1, column=0, padx=20, pady=5
+    row=0, column=2, padx=20, pady=5
 )
 
 tk.Button(botones2, text="Eliminar", width=10, command=eliminar).grid(
-    row=1, column=1, padx=20, pady=5
+    row=0, column=3, padx=20, pady=5
 )
 
 
-tk.Label(pag2, text="Pacientes Registrados", font=("Arial", 12, "bold")).pack(pady=5)
+tk.Label(pag2, text="Pacientes Registrados", font=("Arial", 12, "bold")).pack(pady=10)
 
 tabla = ttk.Treeview(
     pag2,
@@ -239,8 +239,8 @@ tabla.heading("edad", text="Edad")
 tabla.heading("dni", text="DNI")
 
 tabla.column("nombre", width=200)
-tabla.column("edad", width=90)
-tabla.column("dni", width=180)
+tabla.column("edad", width=80)
+tabla.column("dni", width=160)
 
 tabla.pack()
 
