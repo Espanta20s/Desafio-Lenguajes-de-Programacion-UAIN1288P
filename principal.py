@@ -196,6 +196,26 @@ def eliminar():
     mostrar()
 
 
+def buscar():
+    texto = entrada_busqueda.get().strip().lower()
+
+    registros = obtener_registros()
+
+    if texto == "":
+        mostrar(registros)
+        return
+
+    # FILTER: selecciona pacientes cuyo nombre o DNI coincide con la búsqueda.
+    filtrados = list(
+        filter(
+            lambda paciente: texto in paciente[0].lower() or texto in paciente[2],
+            registros,
+        )
+    )
+
+    mostrar(filtrados)
+
+
 ventana = tk.Tk()
 ventana.title("Sistema de Centro de Salud del MINSA")
 ventana.geometry("760x700")
@@ -277,9 +297,30 @@ tk.Button(botones2, text="Eliminar", width=10, command=eliminar).grid(
     row=0, column=3, padx=20, pady=5
 )
 
-# Tabla
+# Botones tabla
 
-tk.Label(pag2, text="Pacientes Registrados", font=("Arial", 12, "bold")).pack(pady=10)
+tk.Label(pag2, text="Pacientes Registrados", font=("Arial", 14, "bold")).pack(pady=10)
+
+
+busqueda = tk.Frame(pag2)
+busqueda.pack(pady=15)
+
+ttk.Label(busqueda, text="Buscar paciente (nombre/DNI):").grid(
+    row=0, column=0, padx=10, pady=10, sticky="e"
+)
+
+entrada_busqueda = tk.Entry(busqueda, width=20)
+entrada_busqueda.grid(row=0, column=1)
+
+tk.Button(busqueda, text="Buscar", width=10, command=buscar).grid(
+    row=0, column=2, padx=20, pady=5
+)
+
+tk.Button(busqueda, text="Mostrar todos", width=10, command=lambda: mostrar()).grid(
+    row=0, column=3, padx=5
+)
+
+# Tabla
 
 tabla = ttk.Treeview(
     pag2, columns=("nombre", "edad", "dni", "telefono"), show="headings", height=10
