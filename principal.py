@@ -8,6 +8,7 @@ def limpiar():
     entrada_nombre.delete(0, tk.END)
     entrada_edad.delete(0, tk.END)
     entrada_dni.delete(0, tk.END)
+    entrada_telefono.delete(0, tk.END)
 
 
 def registrar():
@@ -15,6 +16,7 @@ def registrar():
     nombre = entrada_nombre.get().strip()
     edad = entrada_edad.get().strip()
     dni = entrada_dni.get().strip()
+    telefono = entrada_telefono.get().strip()
 
     if nombre == "" or edad == "" or dni == "":
         messagebox.showwarning("Advertencia", "Complete todos los campos")
@@ -31,7 +33,7 @@ def registrar():
                     return
 
     with open("pacientes.txt", "a", encoding="utf-8") as archivo:
-        archivo.write(nombre + "|" + edad + "|" + dni + "\n")
+        archivo.write(nombre + "|" + edad + "|" + dni + "|" + telefono + "\n")
 
     messagebox.showinfo("Registro", "Paciente registrado correctamente")
 
@@ -71,12 +73,16 @@ def seleccionar(event):
         entrada_dni.delete(0, tk.END)
         entrada_dni.insert(0, valores[2])
 
+        entrada_telefono.delete(0, tk.END)
+        entrada_telefono.insert(0, valores[3])
+
 
 def modificar():
 
     nombre = entrada_nombre.get().strip()
     edad = entrada_edad.get().strip()
     dni = entrada_dni.get().strip()
+    telefono = entrada_telefono.get().strip()
 
     if nombre == "" or edad == "" or dni == "":
         messagebox.showwarning("Advertencia", "Seleccione un paciente")
@@ -92,7 +98,7 @@ def modificar():
                 datos = linea.strip().split("|")
 
                 if len(datos) >= 3 and datos[2] == dni:
-                    registros.append(nombre + "|" + edad + "|" + dni)
+                    registros.append(nombre + "|" + edad + "|" + dni + "|" + telefono)
                     encontrado = True
 
                 else:
@@ -187,7 +193,7 @@ titulo2.pack(pady=20)
 formulario = tk.Frame(pag2)
 formulario.pack()
 
-ttk.Label(formulario, text="Nombre:").grid(
+ttk.Label(formulario, text="Nombres:").grid(
     row=0, column=0, padx=10, pady=10, sticky="e"
 )
 
@@ -203,6 +209,13 @@ ttk.Label(formulario, text="DNI:").grid(row=2, column=0, padx=10, pady=10, stick
 
 entrada_dni = tk.Entry(formulario, width=20)
 entrada_dni.grid(row=2, column=1)
+
+ttk.Label(formulario, text="Telefono:").grid(
+    row=3, column=0, padx=10, pady=10, sticky="e"
+)
+
+entrada_telefono = tk.Entry(formulario, width=20)
+entrada_telefono.grid(row=3, column=1)
 
 
 botones2 = tk.Frame(pag2)
@@ -224,23 +237,23 @@ tk.Button(botones2, text="Eliminar", width=10, command=eliminar).grid(
     row=0, column=3, padx=20, pady=5
 )
 
+# Tabla
 
 tk.Label(pag2, text="Pacientes Registrados", font=("Arial", 12, "bold")).pack(pady=10)
 
 tabla = ttk.Treeview(
-    pag2,
-    columns=("nombre", "edad", "dni"),
-    show="headings",
-    height=10,
+    pag2, columns=("nombre", "edad", "dni", "telefono"), show="headings", height=10
 )
 
 tabla.heading("nombre", text="Nombre")
 tabla.heading("edad", text="Edad")
 tabla.heading("dni", text="DNI")
+tabla.heading("telefono", text="Telefono")
 
 tabla.column("nombre", width=200)
 tabla.column("edad", width=80)
-tabla.column("dni", width=160)
+tabla.column("dni", width=140)
+tabla.column("telefono", width=140)
 
 tabla.pack()
 
